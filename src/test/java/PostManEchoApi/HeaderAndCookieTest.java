@@ -1,16 +1,15 @@
+package PostManEchoApi;
+
 import io.restassured.RestAssured;
-import io.restassured.http.Cookies;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
-import jdk.jfr.ContentType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
-public class PostManEchoApiTest {
+public class HeaderAndCookieTest {
     @Test
     public void getRequestHeaderValidation() {
         RestAssured.baseURI = "https://postman-echo.com";

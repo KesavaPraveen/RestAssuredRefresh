@@ -1,3 +1,5 @@
+package RequestResponseApi;
+
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
@@ -5,7 +7,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-public class RequestResponseApiTest {
+public class UserGetRequestTest {
     @Test
     public void getRequestStatusCodeValidation()
     {

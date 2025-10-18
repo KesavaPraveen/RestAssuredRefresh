@@ -1,14 +1,15 @@
+package JsonPlaceHolderApi;
+
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 
-public class JsonPlaceHolderApiTest {
+public class CommentsApiTest {
     /*
     🧩 Challenge:
 	•	Use https://jsonplaceholder.typicode.com/comments?postId=1
