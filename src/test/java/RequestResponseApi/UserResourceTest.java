@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 
-public class UserResourceTest {
+public class UserResourceTest extends BaseApiTest {
 
     /*
         🧩 Task 1 — POST Request (Create Resource)
@@ -29,7 +29,7 @@ public class UserResourceTest {
     public void createUserTest() {
         String user = "{ \"name\": \"Kesava\", \"job\": \"QA Engineer\" }";
         Response response = RestAssured.given().baseUri("https://reqres.in")
-                .log().all()
+                //.log().all()
                 .header("x-api-key", "reqres-free-v1")
                 .contentType(ContentType.JSON)
                 .body(user)
@@ -63,13 +63,13 @@ public class UserResourceTest {
     public void updateUserTest() {
         String userUpdate = "{ \"name\": \"Kesava\", \"job\": \"Senior QA Engineer III\" }";
         Response response = RestAssured.given().baseUri("https://reqres.in")
-                .log().all()
+                //.log().all()
                 .header("x-api-key", "reqres-free-v1")
                 .contentType(ContentType.JSON)
                 .body(userUpdate)
                 .when().put("/api/users/2")
                 .then()
-                .log().all()
+                //.log().all()
                 .assertThat().statusCode(200)
                 .body("job", equalToIgnoringCase("Senior QA Engineer III"))
                 .body("updatedAt", notNullValue())
@@ -97,13 +97,13 @@ public class UserResourceTest {
     public void partialUserUpdateTest() {
         String partialUpdate = "{ \"job\": \"API Specialist\" }";
         Response response = RestAssured.given().baseUri("https://reqres.in")
-                .log().all()
+                //.log().all()
                 .header("x-api-key", "reqres-free-v1")
                 .contentType(ContentType.JSON)
                 .body(partialUpdate)
                 .when().patch("/api/users/2")
                 .then()
-                .log().all()
+                //.log().all()
                 .assertThat().statusCode(200)
                 .body("job", equalToIgnoringCase("API Specialist"))
                 .body("updatedAt", notNullValue())
@@ -126,11 +126,11 @@ public class UserResourceTest {
     @Test
     public void deleteUserTest() {
         RestAssured.given()
-                .log().all()
+                //.log().all()
                 .header("x-api-key", "reqres-free-v1")
                 .when().delete("https://reqres.in/api/users/2")
                 .then()
-                .log().all()
+                //.log().all()
                 .assertThat().statusCode(204);
     }
 
@@ -152,11 +152,11 @@ public class UserResourceTest {
     public void getDetailsWithQueryParamTest() {
         Response response = RestAssured.given().baseUri("https://reqres.in")
                 .queryParam("page", "2")
-                .log().all()
+                //.log().all()
                 .header("x-api-key", "reqres-free-v1")
                 .when().get("/api/users")
                 .then()
-                .log().all()
+                //.log().all()
                 .assertThat().statusCode(200)
                 .body("page", equalTo(2))
                 .extract().response();
@@ -188,12 +188,12 @@ public class UserResourceTest {
     {
         Response response=RestAssured.given().baseUri("https://reqres.in")
                 .pathParam("userId",2)
-                .log().all()
+                //.log().all()
                 .header("x-api-key", "reqres-free-v1")
                 .when().get("/api/users/{userId}")
                 .then()
                 .assertThat().statusCode(200)
-                .log().all()
+                //.log().all()
                 .body("data.id",equalTo(2))
                 .extract().response();
 
@@ -232,7 +232,8 @@ public class UserResourceTest {
                 .contentType(ContentType.JSON)
                 .body(user)
                 .when().post("/api/users")
-                .then().log().body()
+                .then()
+                //.log().body()
                 .assertThat().statusCode(201)
                 .extract().response();
 
@@ -251,7 +252,7 @@ public class UserResourceTest {
                 .body(userUpdate)
                 .when().put("/api/users/{userId}")
                 .then()
-                .log().body()
+                //.log().body()
                 .assertThat().statusCode(200)
                 .body("name",equalTo("Kesava"))
                 .body("updatedAt", notNullValue());
@@ -273,13 +274,45 @@ public class UserResourceTest {
          */
         System.out.println("Checking the deleted user is present");
         RestAssured.given()
-                .log().all()
+               // .log().all()
                 .pathParam("userId",id)
                 .header("x-api-key", "reqres-free-v1")
                 .when().get("https://reqres.in/api/users/{userId}")
                 .then()
-                .log().all()
+               // .log().all()
                 .assertThat().statusCode(404);
+    }
+
+    @Test
+    public void specBuilderCrudTest()
+    {
+        String user = "{ \"name\": \"Praveen\", \"job\": \"Senior Automation Engineer\" }";
+
+        Response response=RestAssured.given().spec(SpecBuilderUtil.getRequestSpecBuilder())
+                .body(user)
+                .when().post("/api/users")
+                .then().spec(SpecBuilderUtil.getResponseSpecBuilder(201))
+                .extract().response();
+
+        String id=response.jsonPath().getString("id");
+
+        String userUpdate = "{ \"name\": \"Kesava\", \"job\": \"Senior API Automation Engineer\" }";
+
+        RestAssured.given().spec(SpecBuilderUtil.getRequestSpecBuilder())
+                .pathParam("userId",id)
+                .body(userUpdate)
+                .when().put("/api/users/{userId}")
+                .then().spec(SpecBuilderUtil.getResponseSpecBuilder(200));
+
+        RestAssured.given().spec(SpecBuilderUtil.getRequestSpecBuilder())
+                .pathParam("userId",id)
+                .when().delete("/api/users/{userId}")
+                .then().spec(SpecBuilderUtil.getResponseSpecBuilder(204));
+
+        RestAssured.given().spec(SpecBuilderUtil.getRequestSpecBuilder())
+                .pathParam("userId",id)
+                .when().get("/api/users/{userId}")
+                .then().spec(SpecBuilderUtil.getResponseSpecBuilder(404));
     }
 
 }
